@@ -20,7 +20,7 @@ from torch import einsum, nn
 
 #from ..utils import USE_PEFT_BACKEND, deprecate, logging
 #from ..utils.logging import USE_PEFT_BACKEND, deprecate, logging
-from ..utils.logging import get_logger
+#from ..utils.logging import get_logger
 #from ..utils.import_utils import is_xformers_available
 #from ..utils.torch_utils import maybe_allow_in_graph
 #from .lora import LoRACompatibleLinear, LoRALinearLayer
@@ -28,7 +28,7 @@ from ..utils.logging import get_logger
 def is_xformers_available():
 	  return  False
 
-logger = get_logger(__name__)  # pylint: disable=invalid-name
+#logger = get_logger(__name__)  # pylint: disable=invalid-name
 
 
 if is_xformers_available():

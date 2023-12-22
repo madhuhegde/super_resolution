@@ -298,7 +298,7 @@ class Attention(nn.Module):
                 # which uses this type of cross attention ONLY because the attention mask of format
                 # [0, ..., -10.000, ..., 0, ...,] is not supported
                 # throw warning
-                logger.info(
+                print(
                     "Memory efficient attention with `xformers` might currently not work correctly if an attention mask is required for the attention operation."
                 )
                 processor = XFormersAttnAddedKVProcessor(attention_op=attention_op)
@@ -402,7 +402,7 @@ class Attention(nn.Module):
             and isinstance(self.processor, torch.nn.Module)
             and not isinstance(processor, torch.nn.Module)
         ):
-            logger.info(f"You are removing possibly trained weights of {self.processor} with {processor}")
+            print(f"You are removing possibly trained weights of {self.processor} with {processor}")
             self._modules.pop("processor")
 
         self.processor = processor

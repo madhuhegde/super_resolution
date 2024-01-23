@@ -9,8 +9,12 @@ It was shown in [ref1] that DMs have an inductive bias that makes them excellent
 ### Advantages of LDM over GAN 
 
 *  LDMs are trained using Maximum Likelihood cost function (Stable and asymptotically optimal with large dataset)
-*  Strong foundation neurophysics as Theory of Active Inference (Learning is inference in the latent domain and Baysean Brain Hypothesis)
-*  
+*  Strong foundation in neurophysics as Theory of Active Inference (Learning is inference in the latent domain and Baysean Brain Hypothesis)
+*  Better image quality (IS and FID) than GANs due to inherent inductive bias of learning image represenations using Covnets
+
+
+   LDM also supports other modality input y to condition the denoising process. This can be implemented with a conditional denoising autoencoder θ(zt,t,y)
+ and paves the way to controlling the synthesis process through inputs y
 In contrast to previous work, training diffusion models on such a representation allows for the first time to reach a near-optimal point between complexity reduction
 and detail preservation, greatly boosting visual fidelity. By introducing cross-attention layers into the model architecture, we turn diffusion models into powerful and flexible
 generators for general conditioning inputs such as text or low resolution images

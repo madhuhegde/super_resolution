@@ -1,6 +1,9 @@
 # Super Resolution with Latent Diffusion Model
 Repository for Super Resolution Using Latent Diffusion Model
 ## Introduction
+Neural compression is the application of neural networks and other machine learning methods to data compression. Recent advances in statistical machine learning have opened up
+new possibilities for data compression, allowing compression algorithms to be learned end-to-end from data using powerful generative models such as variational
+autoencoders, diffusion probabilistic models, and generative adversarial networks.
 The diffusion models(DMs) achieve state-of-the-art synthesis results by decomposing the image formation process into a sequential application of denoising autoencoders. The formulation of DMs also allows a guiding mechanism to control the image generation process without retraining. By incorporating cross-attention layers into the model architecture, the guiding mechanism can be conditioned on various inputs. When DMs operate directly in pixel space, the optimization of powerful DMs often consumes hundreds of GPU days and inference is expensive due to sequential evaluations. To enable DM training on limited computational resources while retaining their quality and flexibility, the diffusion can be applied in the latent space of powerful pretrained autoencoders.
 
 ### Lossy Compressor

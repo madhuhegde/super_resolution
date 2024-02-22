@@ -11,7 +11,7 @@ import torch.nn as nn
 from ..utils.output import BaseOutput, randn_tensor, BaseModel
 from dataclasses import dataclass
 from .unet_2d import UNet2DModel
-from .vq_model import VQModel
+from .vq_model import VQModel, VAEDecoder
 from .scheduling_ddim import DDIMScheduler
 
 
@@ -75,7 +75,7 @@ class LDMSuperResolutionPipeline(BaseModel):
     def __init__(self):
         super().__init__()
 
-        self.vqvae = VQModel(in_channels=3,out_channels=3,down_block_types=['DownEncoderBlock2D', 'DownEncoderBlock2D', 'DownEncoderBlock2D'],up_block_types=['UpDecoderBlock2D', 'UpDecoderBlock2D', 'UpDecoderBlock2D'], block_out_channels=[128, 256, 512], layers_per_block=2, act_fn='silu', latent_channels=3, sample_size=256,num_vq_embeddings=8192, norm_num_groups=32, vq_embed_dim =3,scaling_factor=0.18215,norm_type='group')
+        #self.vqvae = VQModel(in_channels=3,out_channels=3,down_block_types=['DownEncoderBlock2D', 'DownEncoderBlock2D', 'DownEncoderBlock2D'],up_block_types=['UpDecoderBlock2D', 'UpDecoderBlock2D', 'UpDecoderBlock2D'], block_out_channels=[128, 256, 512], layers_per_block=2, act_fn='silu', latent_channels=3, sample_size=256,num_vq_embeddings=8192, norm_num_groups=32, vq_embed_dim =3,scaling_factor=0.18215,norm_type='group')
         #vqvae = VQModel(in_channels=3,out_channels=3,down_block_types=['DownEncoderBlock2D', 'DownEncoderBlock2D', 'DownEncoderBlock2D'],up_block_types=['UpDecoderBlock2D', 'UpDecoderBlock2D', 'UpDecoderBlock2D'], block_out_channels=[64, 128, 256], layers_per_block=2, act_fn='silu', latent_channels=3, sample_size=256,num_vq_embeddings=2048, norm_num_groups=32, vq_embed_dim =3,scaling_factor=0.18215,norm_type='group')
         self.unet = UNet2DModel(sample_size=64, in_channels=6,out_channels=3, center_input_sample=False,time_embedding_type='positional',freq_shift=0,flip_sin_to_cos=True, down_block_types=['DownBlock2D', 'DownBlock2D', 'DownBlock2D', 'AttnDownBlock2D'],up_block_types=['AttnUpBlock2D', 'UpBlock2D', 'UpBlock2D', 'UpBlock2D'], block_out_channels=[160, 320, 320, 640],layers_per_block=2,mid_block_scale_factor=1,downsample_padding=1,downsample_type='conv',upsample_type='conv',dropout=0.0,act_fn='silu', attention_head_dim=32,norm_num_groups=32,attn_norm_num_groups=None,norm_eps=1e-05,resnet_time_scale_shift='default',add_attention=True,class_embed_type=None,num_class_embeds=None,num_train_timesteps=None)
         self.scheduler = DDIMScheduler(num_train_timesteps = 1000,
@@ -94,7 +94,7 @@ class LDMSuperResolutionPipeline(BaseModel):
                                   timestep_spacing = "leading",
                                   rescale_betas_zero_snr = False,
                     )
-        
+        self.vaedecoder = VAEDecoder(in_channels=3,out_channels=3,up_block_types=['UpDecoderBlock2D', 'UpDecoderBlock2D', 'UpDecoderBlock2D'], block_out_channels=[128, 256, 512], layers_per_block=2, act_fn='silu', latent_channels=3, sample_size=256,num_vq_embeddings=8192, norm_num_groups=32, vq_embed_dim =3,scaling_factor=0.18215,norm_type='group')
     @torch.no_grad()
     def __call__(
         self,
@@ -183,7 +183,7 @@ class LDMSuperResolutionPipeline(BaseModel):
             latents = self.scheduler.step(noise_pred, t, latents, **extra_kwargs).prev_sample
 
         # decode the image latents with the VQVAE
-        image = self.vqvae.decode(latents).sample
+        image = self.vaedecoder.decode(latents).sample
         image = torch.clamp(image, -1.0, 1.0)
         image = image / 2 + 0.5
         image = image.cpu().permute(0, 2, 3, 1).numpy()

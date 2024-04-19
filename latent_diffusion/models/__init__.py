@@ -16,5 +16,6 @@ from .unet_2d import UNet2DModel
        
 from .vq_model import VQModel, VAEDecoder
 from .pipeline_latent_diffusion_superresolution import LDMSuperResolutionPipeline
+from .pipeline_ldm_consistency_sr import LDMConsistencySRPipeline
 
   
